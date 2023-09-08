@@ -2,7 +2,6 @@ package movierental;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * A customer who rents movies.
@@ -35,53 +34,36 @@ public class Customer {
 	 * @return the statement as a String
 	 */
 	public String statement() {
-		double amount = 0; // total charges
-		int frequentRenterPoints = 0; // frequent renter points
 		StringBuilder stmt = new StringBuilder("Rental Report for "+getName()).append("\n\n");
-		// header for details section
 		stmt.append(String.format("%-40.40s %4s %-8s\n", "Movie Title", "Days", "Price"));
 		
 		for(Rental rental: rentals) {
-			double thisAmount = getRentalAmount(rental);
-			// award renter points for each rental
-			if (rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) frequentRenterPoints += rental.getDaysRented();
-			else frequentRenterPoints++;
-			
-			// one line of detail for this movie
-			stmt.append(String.format("%-40.40s %3d %8.2f\n", rental.getMovie().getTitle(), rental.getDaysRented(), thisAmount));
-			amount += thisAmount;
+			stmt.append(String.format("%-40.40s %3d %8.2f\n", rental.getMovie().getTitle(), rental.getDaysRented(), rental.amountFor()));
 		}
-		// footer: summary of charges
-		stmt.append( String.format("%-44.44s %8.2f\n", "Total Charges", amount));
-		stmt.append( String.format("%-44.44s %5d\n","Frequent Renter Points earned", frequentRenterPoints) );
+		stmt.append( String.format("%-44.44s %8.2f\n", "Total Charges", getTotalCharge()));
+		stmt.append( String.format("%-44.44s %5d\n","Frequent Renter Points earned", getTotalFrequentRenterPoints()) );
 		
 		return stmt.toString();
 	}
 
-	private static double getRentalAmount(Rental rental) {
-		double thisAmount = 0;
-		// compute rental change
-		switch( rental.getMovie().getPriceCode() ) {
-		case Movie.REGULAR:
-			thisAmount += 2;
-			if (rental.getDaysRented() > 2) thisAmount += 1.5*(rental.getDaysRented()-2);
-			break;
-		case Movie.CHILDRENS:
-			thisAmount = 1.5;
-			if (rental.getDaysRented() > 3) thisAmount += 1.5*(rental.getDaysRented()-3);
-			break;
-		case Movie.NEW_RELEASE:
-			thisAmount = 3* rental.getDaysRented();
-			break;
-		default:
-			getLogger().warning("Movie "+ rental.getMovie()+" has unrecognized priceCode "+ rental.getMovie().getPriceCode());
-		}
-		return thisAmount;
+	public double getTotalCharge(){
+		return this.rentals.stream().mapToDouble(Rental::amountFor).sum();
 	}
 
-	/** Get a logger object. */
-	private static Logger getLogger() {
-		return Logger.getLogger(Customer.class.getName());
+	public int getTotalFrequentRenterPoints(){
+		return this.rentals.stream().mapToInt(Rental::getFrequentRenterPoints).sum();
 	}
-	
-}
+
+	public String htmlStatement() {
+		StringBuilder result = new StringBuilder("<H1>Rentals for <EM>" + getName() + "</EM></H1><P>\n");
+		for(Rental rental: rentals){
+			result.append(rental.getMovie().getTitle()).append(": ").append(rental.amountFor()).append("<BR>\n");
+		}
+		result.append("<P>You owe <EM>").append(getTotalCharge()).append("</EM><P>\n");
+		result.append("<P>On this rental you earned <EM>").append(getTotalFrequentRenterPoints()).append("</EM> frequent renter points</P>");
+
+		return result.toString();
+	}
+
+	}
+

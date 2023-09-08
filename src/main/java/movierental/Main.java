@@ -19,5 +19,6 @@ public class Main {
 			days++;
 		}
 		System.out.println( customer.statement() );
+		System.out.println(customer.htmlStatement());
 	}
 }
