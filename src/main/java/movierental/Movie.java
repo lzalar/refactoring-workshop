@@ -1,4 +1,7 @@
 package movierental;
+
+import java.util.logging.Logger;
+
 /**
  * A movie available for rent.
  */
@@ -40,5 +43,31 @@ public class Movie {
 	
 	public String toString() {
 		return this.title;
+	}
+
+	public double getCharge(int daysRented) {
+		double thisAmount = 0;
+		// compute rental change
+		switch (getPriceCode()) {
+			case Movie.REGULAR -> {
+				thisAmount += 2;
+				if (daysRented > 2) thisAmount += 1.5 * (daysRented - 2);
+			}
+			case Movie.CHILDRENS -> {
+				thisAmount = 1.5;
+				if (daysRented > 3) thisAmount += 1.5 * (daysRented - 3);
+			}
+			case Movie.NEW_RELEASE -> thisAmount = 3 * daysRented;
+			default ->
+					getLogger().warning("Movie " + getTitle() + " has unrecognized priceCode " + getPriceCode());
+		}
+		return thisAmount;
+	}
+	private static Logger getLogger() {
+		return Logger.getLogger(Movie.class.getName());
+	}
+
+	public int getFrequentRenterPoints(int daysRented) {
+		return getPriceCode() == Movie.NEW_RELEASE ? daysRented : 1;
 	}
 }
