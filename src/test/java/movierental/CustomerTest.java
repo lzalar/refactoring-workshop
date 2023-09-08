@@ -67,7 +67,31 @@ public class CustomerTest {
 			assertEquals(tokens[i],lines[i]);
 		}
 	}
-	
-	
+
+//	@Test
+//	public void givenManyMovies_generateHTMLStatement_correctFullStatement() {
+//		int days = 11;
+//		for (Movie m : movies) {
+//			c.addRental(new Rental(m, days));
+//		}
+//		String stmt = c.htmlStatement();
+//		System.out.println(stmt);
+//		String[] tokens = stmt.split("\n");
+//		String[] lines = ("""
+//                <H1>Rentals for <EM>Movie Mogul</EM></H1><P>
+//                CitizenFour: 15.5<BR>
+//                Frozen: 13.5<BR>
+//                Ex Machina: 33.0<BR>
+//                Bridge of Spies: 33.0<BR>
+//                Particle Fever: 15.5<BR>
+//                <P>You owe <EM>110.5</EM><P>
+//                <P>On this rental you earned <EM>25</EM> frequent renter points</P>
+//                """).split("\n");
+//
+//		assertEquals(tokens.length, lines.length);
+//		for (int i = 0; i < lines.length; i++) {
+//			assertEquals(tokens[i], lines[i]);
+//		}
+//	}
 
 }
