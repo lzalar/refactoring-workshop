@@ -42,23 +42,7 @@ public class Customer {
 		stmt.append(String.format("%-40.40s %4s %-8s\n", "Movie Title", "Days", "Price"));
 		
 		for(Rental rental: rentals) {
-			double thisAmount = 0;
-			// compute rental change
-			switch( rental.getMovie().getPriceCode() ) {
-			case Movie.REGULAR:
-				thisAmount += 2;
-				if (rental.getDaysRented() > 2) thisAmount += 1.5*(rental.getDaysRented()-2);
-				break;
-			case Movie.CHILDRENS:
-				thisAmount = 1.5;
-				if (rental.getDaysRented() > 3) thisAmount += 1.5*(rental.getDaysRented()-3);
-				break;
-			case Movie.NEW_RELEASE:
-				thisAmount = 3*rental.getDaysRented();
-				break;
-			default:
-				getLogger().warning("Movie "+rental.getMovie()+" has unrecognized priceCode "+rental.getMovie().getPriceCode());
-			}
+			double thisAmount = getRentalAmount(rental);
 			// award renter points for each rental
 			if (rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) frequentRenterPoints += rental.getDaysRented();
 			else frequentRenterPoints++;
@@ -72,6 +56,27 @@ public class Customer {
 		stmt.append( String.format("%-44.44s %5d\n","Frequent Renter Points earned", frequentRenterPoints) );
 		
 		return stmt.toString();
+	}
+
+	private static double getRentalAmount(Rental rental) {
+		double thisAmount = 0;
+		// compute rental change
+		switch( rental.getMovie().getPriceCode() ) {
+		case Movie.REGULAR:
+			thisAmount += 2;
+			if (rental.getDaysRented() > 2) thisAmount += 1.5*(rental.getDaysRented()-2);
+			break;
+		case Movie.CHILDRENS:
+			thisAmount = 1.5;
+			if (rental.getDaysRented() > 3) thisAmount += 1.5*(rental.getDaysRented()-3);
+			break;
+		case Movie.NEW_RELEASE:
+			thisAmount = 3* rental.getDaysRented();
+			break;
+		default:
+			getLogger().warning("Movie "+ rental.getMovie()+" has unrecognized priceCode "+ rental.getMovie().getPriceCode());
+		}
+		return thisAmount;
 	}
 
 	/** Get a logger object. */
